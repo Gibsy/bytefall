@@ -5,7 +5,7 @@
 #include <math.h>
 
 /* layout */
-#define WIN_W  800
+#define WIN_W  390
 #define WIN_H  560
 #define BAR_H   36
 #define BOT_H   38
@@ -36,11 +36,11 @@ static const int   MODE_BPP[]   = {1,3,4,2};
 #define AUDIO_BUF   512
 
 /* waterfall */
-#define VIEW_W_PX   128   /* logical columns (fewer = bigger pixels) */
-#define PIXEL_H       3   /* row height in screen px */
-#define SCROLL_SPD    1   /* px per frame, must be <= PIXEL_H */
+#define VIEW_W_PX   128   
+#define PIXEL_H       3 
+#define SCROLL_SPD    1  
 
-/* 5x7 bitmap font */
+/* 5x7 bitmap */
 static const Uint8 F57[][5]={
 {0,0,0,0,0},{0,0,95,0,0},{0,7,0,7,0},{20,127,20,127,20},
 {36,42,127,42,18},{35,19,8,100,98},{54,73,85,34,80},{0,5,3,0,0},
@@ -344,7 +344,7 @@ static void draw_help(SDL_Renderer*r,int ww,int wh){
 
 int main(int argc,char**argv){
     SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO);
-    SDL_Window*win=SDL_CreateWindow("Binary Waterfall",
+    SDL_Window*win=SDL_CreateWindow("BYTEFALL",
         SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,WIN_W,WIN_H,
         SDL_WINDOW_RESIZABLE|SDL_WINDOW_ALLOW_HIGHDPI);
     SDL_Renderer*ren=SDL_CreateRenderer(win,-1,
