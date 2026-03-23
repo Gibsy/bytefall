@@ -27,7 +27,7 @@
 #define C_RED       0xff3b30ff
 #define C_RED_BG    0x2a0c0cff
 
-/* pixel modes — bytes per pixel */
+/* bytes per pixel */
 typedef enum { MODE_8G=0, MODE_RGB=1, MODE_RGBA=2, MODE_16G=3, MODE_COUNT } PixelMode;
 static const char *MODE_NAMES[] = {"8G","RGB","RGBA","16G"};
 static const int   MODE_BPP[]   = {1,3,4,2};
@@ -41,7 +41,7 @@ static const int   MODE_BPP[]   = {1,3,4,2};
 #define PIXEL_H       3   /* row height in screen px */
 #define SCROLL_SPD    1   /* px per frame, must be <= PIXEL_H */
 
-/* 5x7 bitmap font */
+/* 5x7 bitmap */
 static const Uint8 F57[][5]={
 {0,0,0,0,0},{0,0,95,0,0},{0,7,0,7,0},{20,127,20,127,20},
 {36,42,127,42,18},{35,19,8,100,98},{54,73,85,34,80},{0,5,3,0,0},
@@ -117,7 +117,7 @@ static char   g_flash[160]  = "";
 static Uint32 g_flash_until = 0;
 static int    g_flash_ok    = 1;
 
-/* audio callback: raw bytes as PCM */
+/* raw bytes as PCM */
 static void audio_cb(void*ud,Uint8*stream,int len){
     (void)ud;
     if(!g_data||g_size==0||g_muted||!g_playing){SDL_memset(stream,0,len);return;}
