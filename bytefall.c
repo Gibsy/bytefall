@@ -27,20 +27,21 @@
 #define C_RED       0xff3b30ff
 #define C_RED_BG    0x2a0c0cff
 
+/* pixel modes — bytes per pixel */
 typedef enum { MODE_8G=0, MODE_RGB=1, MODE_RGBA=2, MODE_16G=3, MODE_COUNT } PixelMode;
 static const char *MODE_NAMES[] = {"8G","RGB","RGBA","16G"};
 static const int   MODE_BPP[]   = {1,3,4,2};
 
 /* audio */
-#define AUDIO_RATE  8000
+#define AUDIO_RATE  11025
 #define AUDIO_BUF   512
 
 /* waterfall */
-#define VIEW_W_PX   128   
-#define PIXEL_H       3 
-#define SCROLL_SPD    1  
+#define VIEW_W_PX   128   /* logical columns (fewer = bigger pixels) */
+#define PIXEL_H       3   /* row height in screen px */
+#define SCROLL_SPD    1   /* px per frame, must be <= PIXEL_H */
 
-/* 5x7 bitmap */
+/* 5x7 bitmap font */
 static const Uint8 F57[][5]={
 {0,0,0,0,0},{0,0,95,0,0},{0,7,0,7,0},{20,127,20,127,20},
 {36,42,127,42,18},{35,19,8,100,98},{54,73,85,34,80},{0,5,3,0,0},
@@ -344,7 +345,7 @@ static void draw_help(SDL_Renderer*r,int ww,int wh){
 
 int main(int argc,char**argv){
     SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO);
-    SDL_Window*win=SDL_CreateWindow("BYTEFALL",
+    SDL_Window*win=SDL_CreateWindow("Bytefall",
         SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,WIN_W,WIN_H,
         SDL_WINDOW_RESIZABLE|SDL_WINDOW_ALLOW_HIGHDPI);
     SDL_Renderer*ren=SDL_CreateRenderer(win,-1,
@@ -437,6 +438,8 @@ int main(int argc,char**argv){
                     g_pos=(double)g_size;g_playing=0;
                     do_flash("End of file",1,2000);
                 }
+                /* keep audio in sync with video */
+                g_audio_pos=(size_t)g_pos;
             }
         }
 
