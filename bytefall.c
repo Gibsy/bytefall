@@ -147,11 +147,18 @@ static void audio_cb(void*ud, Uint8*stream, int len){
     }
 }
 
-/*  draw volume  */
+/*  draw volume btn  */
 static void draw_volume(SDL_Renderer* ren){
+    if(g_vol_btn.w < 60) g_vol_btn.w = 60;
+
     Uint32 col = g_vol_show ? C_BTN_HOV : C_BTN;
     fill_rect(ren, g_vol_btn.x, g_vol_btn.y, g_vol_btn.w, g_vol_btn.h, col);
     draw_border(ren, g_vol_btn.x, g_vol_btn.y, g_vol_btn.w, g_vol_btn.h, C_BTN_BRD);
+
+    const char* lbl = "Vol";  
+    int tw = str_w(lbl, 1);
+    int th = 7; 
+    draw_str(ren, g_vol_btn.x + (g_vol_btn.w - tw)/2, g_vol_btn.y + (g_vol_btn.h - th)/2, lbl, 1, C_TEXT);
 
     if(g_vol_show){
         int slider_w = 100, slider_h = 6;
