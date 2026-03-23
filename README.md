@@ -48,3 +48,7 @@ Drag and drop any file onto the window or pass it as an argument:
 | `↑` / `↓` | Speed |
 | `?` | Help |
 | Mouse wheel | Scroll |
+
+# IMG2BIN
+You can create images like that using [img2bin](https://github.com/Gibsy/image-to-bin)
+![IMG2BIN](previewBIN.png)
