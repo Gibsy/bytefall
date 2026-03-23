@@ -8,7 +8,7 @@ Renders any file as pixels and plays it as audio
 pacman -S mingw-w64-ucrt-x86_64-SDL2
 ```
 ```bash
-gcc bytefall.c -o bytefall.exe -I/ucrt64/include/SDL2 -L/ucrt64/lib -lmingw32 -lSDL2main -Wl,-Bstatic -lSDL2 -Wl,-Bdynamic -lm -mwindows -lole32 -loleaut32 -limm32 -lwinmm -lversion -lsetupapi -lcfgmgr32
+gcc main.c -o bytefall.exe -I/ucrt64/include/SDL2 -L/ucrt64/lib -lmingw32 -lSDL2main -Wl,-Bstatic -lSDL2 -Wl,-Bdynamic -lm -mwindows -lole32 -loleaut32 -limm32 -lwinmm -lversion -lsetupapi -lcfgmgr32
 ```
 ### Linux
 > Requires SDL2
