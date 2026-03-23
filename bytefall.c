@@ -105,8 +105,6 @@ static PixelMode g_mode     = MODE_RGB;
 
 static SDL_AudioDeviceID g_adev      = 0;
 static volatile size_t   g_audio_pos = 0;
-static int               g_muted     = 0;
-static float             g_volume    = 0.5f;
 
 static int    g_show_help    = 0;
 static int    g_scr_drag     = 0;
@@ -117,17 +115,57 @@ static char   g_flash[160]  = "";
 static Uint32 g_flash_until = 0;
 static int    g_flash_ok    = 1;
 
-/* raw bytes as PCM */
-static void audio_cb(void*ud,Uint8*stream,int len){
+static SDL_Rect g_vol_btn    = {8, 8, 20, 20};
+static SDL_Rect g_vol_slider = {0,0,0,0};
+static int g_vol_drag = 0;
+static int g_vol_show = 0;
+static float g_volume = 0.1f; // дефолт 10%
+static int g_muted = 0;
+
+/* audio callback  */
+static void audio_cb(void*ud, Uint8*stream, int len){
     (void)ud;
-    if(!g_data||g_size==0||g_muted||!g_playing){SDL_memset(stream,0,len);return;}
-    Sint16*out=(Sint16*)stream; int n=len/2;
-    for(int i=0;i<n;i++){
-        if(g_audio_pos>=g_size){out[i]=0;continue;}
-        Sint16 s=(Sint16)((Sint8)g_data[g_audio_pos++]);
-        out[i]=(Sint16)(s*(Sint16)(g_volume*255.0f));
+    if(!g_data || g_size==0 || g_muted || !g_playing){
+        SDL_memset(stream, 0, len);
+        return;
+    }
+    Sint16* out = (Sint16*)stream;
+    int n = len/2;
+
+    // коэф
+    const float scale8 = 0.08f; // 8% from полный диапазон
+
+    for(int i=0; i<n; i++){
+        if(g_audio_pos >= g_size){ 
+            out[i]=0; 
+            continue; 
+        }
+        Sint16 s = ((int)g_data[g_audio_pos++] - 128) << 8;
+        s = (Sint16)(s * scale8 * g_volume);
+        if(g_muted) s = 0;
+        out[i] = s;
     }
 }
+
+/*  draw volume  */
+static void draw_volume(SDL_Renderer* ren){
+    Uint32 col = g_vol_show ? C_BTN_HOV : C_BTN;
+    fill_rect(ren, g_vol_btn.x, g_vol_btn.y, g_vol_btn.w, g_vol_btn.h, col);
+    draw_border(ren, g_vol_btn.x, g_vol_btn.y, g_vol_btn.w, g_vol_btn.h, C_BTN_BRD);
+
+    if(g_vol_show){
+        int slider_w = 100, slider_h = 6;
+        g_vol_slider.x = g_vol_btn.x + g_vol_btn.w + 5;
+        g_vol_slider.y = g_vol_btn.y + (g_vol_btn.h - slider_h)/2;
+        g_vol_slider.w = slider_w;
+        g_vol_slider.h = slider_h;
+
+        fill_rect(ren, g_vol_slider.x, g_vol_slider.y, slider_w, slider_h, C_BTN);
+        int filled = (int)(g_volume * slider_w);
+        fill_rect(ren, g_vol_slider.x, g_vol_slider.y, filled, slider_h, C_ACT);
+    }
+}
+
 static void audio_init(void){
     SDL_AudioSpec want={0},got;
     want.freq=AUDIO_RATE;want.format=AUDIO_S16SYS;
@@ -365,6 +403,33 @@ int main(int argc,char**argv){
             g_hov[i]=in_rect(mx,my,g_btns[i].r);
 
         while(SDL_PollEvent(&ev)){
+			    if(ev.type==SDL_MOUSEBUTTONDOWN && ev.button.button==SDL_BUTTON_LEFT){
+        int bx=ev.button.x, by=ev.button.y;
+
+        // button 
+        if(bx>=g_vol_btn.x && bx<g_vol_btn.x+g_vol_btn.w &&
+           by>=g_vol_btn.y && by<g_vol_btn.y+g_vol_btn.h){
+            g_vol_show = !g_vol_show;
+        }
+
+        // scroll bar 
+        if(g_vol_show &&
+           bx>=g_vol_slider.x && bx<g_vol_slider.x+g_vol_slider.w &&
+           by>=g_vol_slider.y && by<g_vol_slider.y+g_vol_slider.h){
+            g_vol_drag = 1;
+        }
+    }
+
+    if(ev.type==SDL_MOUSEBUTTONUP && ev.button.button==SDL_BUTTON_LEFT){
+        g_vol_drag = 0;
+    }
+
+    if(ev.type==SDL_MOUSEMOTION && g_vol_drag){
+        int mx = ev.motion.x;
+        float v = (float)(mx - g_vol_slider.x)/(float)g_vol_slider.w;
+        if(v<0)v=0; if(v>1)v=1;
+        g_volume = v;
+    }
             if(ev.type==SDL_QUIT) running=0;
             if(ev.type==SDL_KEYDOWN){
                 if(g_show_help){
@@ -438,7 +503,7 @@ int main(int argc,char**argv){
                     g_pos=(double)g_size;g_playing=0;
                     do_flash("End of file",1,2000);
                 }
-                /* keep audio in sync with video */
+                /* sync */
                 g_audio_pos=(size_t)g_pos;
             }
         }
@@ -494,6 +559,7 @@ int main(int argc,char**argv){
 
         if(g_show_help) draw_help(ren,ww,wh);
 
+		draw_volume(ren);
         SDL_RenderPresent(ren);
         SDL_Delay(8);
     }
