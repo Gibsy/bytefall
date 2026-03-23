@@ -8,7 +8,7 @@ Renders any file as pixels and plays it as audio
 pacman -S mingw-w64-ucrt-x86_64-SDL2
 ```
 ```bash
-gcc binary_waterfall.c -o bytefall.exe -I/ucrt64/include/SDL2 -L/ucrt64/lib -lmingw32 -lSDL2main -Wl,-Bstatic -lSDL2 -Wl,-Bdynamic -lm -mwindows -lole32 -loleaut32 -limm32 -lwinmm -lversion -lsetupapi -lcfgmgr32
+gcc bytefall.c -o bytefall.exe -I/ucrt64/include/SDL2 -L/ucrt64/lib -lmingw32 -lSDL2main -Wl,-Bstatic -lSDL2 -Wl,-Bdynamic -lm -mwindows -lole32 -loleaut32 -limm32 -lwinmm -lversion -lsetupapi -lcfgmgr32
 ```
 ### Linux
 > Requires SDL2
@@ -16,7 +16,7 @@ gcc binary_waterfall.c -o bytefall.exe -I/ucrt64/include/SDL2 -L/ucrt64/lib -lmi
 sudo apt install libsdl2-dev
 ```
 ```bash
-gcc binary_waterfall.c -o bytefall $(sdl2-config --cflags --libs) -lm
+gcc bytefall.c -o bytefall $(sdl2-config --cflags --libs) -lm
 ```
 ### macOS
 > Requires SDL2 via Homebrew
@@ -24,7 +24,7 @@ gcc binary_waterfall.c -o bytefall $(sdl2-config --cflags --libs) -lm
 brew install sdl2
 ```
 ```bash
-gcc binary_waterfall.c -o bytefall $(sdl2-config --cflags --libs) -lm
+gcc bytefall.c -o bytefall $(sdl2-config --cflags --libs) -lm
 ```
 
 # Usage
